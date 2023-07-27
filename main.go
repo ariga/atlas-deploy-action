@@ -100,7 +100,7 @@ func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
 		BaselineVersion: i.Baseline,
 	}
 	if i.Dir != "" {
-		params.DirURL = i.Dir
+		params.DirURL = "file://" + i.Dir
 	}
 	return client.Apply(ctx, params)
 }

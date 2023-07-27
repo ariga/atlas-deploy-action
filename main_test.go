@@ -139,7 +139,7 @@ func TestRun(t *testing.T) {
 	dbpath := sqlitedb(t)
 	dburl := fmt.Sprintf("sqlite://%s", dbpath)
 	run, err := Run(context.Background(), &Input{
-		Dir: "file://internal/testdata/migrations",
+		Dir: "./internal/testdata/migrations",
 		URL: dburl,
 	})
 	require.NoError(t, err)
