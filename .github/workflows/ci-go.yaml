@@ -38,6 +38,8 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+      - run: |
+          curl -sSf 'https://atlasgo.sh?test=1' | env ATLAS_DEBUG=true sh
       - name: Run tests
         run: |
           go test -race ./...

@@ -1,10 +1,16 @@
 package main
 
 import (
+	"context"
+	"database/sql"
+	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/sethvargo/go-githubactions"
 	"github.com/stretchr/testify/require"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func TestLoad(t *testing.T) {
@@ -23,14 +29,14 @@ func TestLoad(t *testing.T) {
 			name: "Valid Inputs",
 			env: map[string]string{
 				"INPUT_URL":         "sqlite://file.db",
-				"INPUT_COUNT":       "1",
+				"INPUT_AMOUNT":      "1",
 				"INPUT_TX-MODE":     "all",
 				"INPUT_BASELINE":    "1234",
 				"INPUT_ALLOW-DIRTY": "true",
 			},
 			expect: &Input{
 				URL:        "sqlite://file.db",
-				Count:      1,
+				Amount:     1,
 				TxMode:     "all",
 				Baseline:   "1234",
 				AllowDirty: true,
@@ -59,10 +65,10 @@ func TestLoad(t *testing.T) {
 			hasErr: true,
 		},
 		{
-			name: "Invalid Count",
+			name: "Invalid Amount",
 			env: map[string]string{
-				"INPUT_URL":   "sqlite://file.db",
-				"INPUT_COUNT": "notAnInt",
+				"INPUT_URL":    "sqlite://file.db",
+				"INPUT_AMOUNT": "notAnInt",
 			},
 			expect: nil,
 			hasErr: true,
@@ -127,4 +133,23 @@ func TestLoad(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestRun(t *testing.T) {
+	dbpath := sqlitedb(t)
+	dburl := fmt.Sprintf("sqlite://%s", dbpath)
+	run, err := Run(context.Background(), &Input{
+		Dir: "file://internal/testdata/migrations",
+		URL: dburl,
+	})
+	require.NoError(t, err)
+	require.Equal(t, 2, len(run.Applied))
+}
+
+func sqlitedb(t *testing.T) string {
+	td := t.TempDir()
+	dbpath := filepath.Join(td, "file.db")
+	_, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?cache=shared&_fk=1", dbpath))
+	require.NoError(t, err)
+	return dbpath
 }
