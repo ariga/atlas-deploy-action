@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
+	"ariga.io/atlas-go-sdk/atlasexec"
 	"github.com/sethvargo/go-githubactions"
 )
 
@@ -21,13 +24,12 @@ type (
 	// Input is created from the GitHub Action "with" configuration.
 	Input struct {
 		URL        string
-		Count      int
+		Amount     uint64
 		TxMode     string
 		Baseline   string
 		AllowDirty bool
 		Dir        string
-
-		Cloud Cloud
+		Cloud      Cloud
 	}
 	Cloud struct {
 		Dir   string
@@ -44,12 +46,12 @@ func Load(act *githubactions.Action) (*Input, error) {
 	if i.URL == "" {
 		return nil, fmt.Errorf("url is required")
 	}
-	if cs := act.GetInput("count"); cs != "" {
-		c, err := strconv.Atoi(cs)
+	if as := act.GetInput("amount"); as != "" {
+		a, err := strconv.ParseUint(as, 10, 64)
 		if err != nil {
 			return nil, err
 		}
-		i.Count = c
+		i.Amount = a
 	}
 	if txm := act.GetInput("tx-mode"); txm != "" {
 		switch txm {
@@ -79,4 +81,26 @@ func Load(act *githubactions.Action) (*Input, error) {
 	}
 	i.Cloud.URL = act.GetInput("cloud-url")
 	return i, nil
+}
+
+// Run runs the migrate apply for the input.
+func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	client, err := atlasexec.NewClient(wd, "atlas")
+	if err != nil {
+		return nil, err
+	}
+	params := &atlasexec.ApplyParams{
+		URL:             i.URL,
+		Amount:          i.Amount,
+		TxMode:          i.TxMode,
+		BaselineVersion: i.Baseline,
+	}
+	if i.Dir != "" {
+		params.DirURL = i.Dir
+	}
+	return client.Apply(ctx, params)
 }
