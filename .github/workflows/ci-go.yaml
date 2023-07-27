@@ -69,7 +69,7 @@ jobs:
           curl -sSf 'https://atlasgo.sh?test=1' | env ATLAS_DEBUG=true sh
           atlas migrate status --url sqlite://file.db --dir file://./internal/testdata/migrations
           output=$(atlas migrate status --url sqlite://file.db --dir file://./internal/testdata/migrations)
-          if [[ "$output" == *"Already at latest versionx"* ]]; then
+          if [[ "$output" == *"Already at latest version"* ]]; then
             echo "OK"
           else
             echo "Expected 'Already at latest version', got '$output'"
