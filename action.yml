@@ -1,0 +1,17 @@
+name: 'atlas-deploy-action'
+description: 'Deploy your database schema migrations using Atlas'
+branding:
+  icon: database
+author: 'Ariga'
+inputs:
+  url:
+    description: 'URL to target database (should be passed as a secret).'
+    required: true
+  cloud-token:
+    description: 'Token for using Atlas Cloud (should be passed as a secret).'
+    required: false
+  cloud-dir:
+    description: 'Name of the migration directory in the cloud'
+runs:
+  using: 'docker'
+  image: 'docker://arigaio/atlas-deploy-action:latest'
