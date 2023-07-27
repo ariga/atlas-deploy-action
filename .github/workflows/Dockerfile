@@ -11,7 +11,9 @@ RUN CGO_ENABLED=0 go build -o /go/bin/app
 
 FROM gcr.io/distroless/static-debian11
 
-COPY --from=atlas /atlas .
+ENV PATH="/bin"
+
+COPY --from=atlas /atlas /bin
 
 COPY --from=build /go/bin/app /
 
