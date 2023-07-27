@@ -67,7 +67,7 @@ jobs:
           dir: ./internal/testdata/migrations
       - run: |
           curl -sSf 'https://atlasgo.sh?test=1' | env ATLAS_DEBUG=true sh
-          atlas migrate status --url sqlite://file.db --dir ./internal/testdata/migrations
+          atlas migrate status --url sqlite://file.db --dir file://./internal/testdata/migrations
   docker:
     runs-on: ubuntu-latest
     needs: [golangci-lint, unit-tests, integration-tests]
