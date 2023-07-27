@@ -17,7 +17,11 @@ func main() {
 	if err != nil {
 		act.Fatalf("failed to load input: %v", err)
 	}
-	act.Infof("input: %+v", inp)
+	run, err := Run(context.Background(), inp)
+	if err != nil {
+		act.Fatalf("failed to run: %v", err)
+	}
+	act.Infof("Run complete: +%v", run)
 }
 
 type (
