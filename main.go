@@ -17,7 +17,11 @@ func main() {
 	if err != nil {
 		act.Fatalf("failed to load input: %v", err)
 	}
-	act.Infof("input: %+v", inp)
+	run, err := Run(context.Background(), inp)
+	if err != nil {
+		act.Fatalf("failed to run: %v", err)
+	}
+	act.Infof("Run complete: +%v", run)
 }
 
 type (
@@ -100,7 +104,7 @@ func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
 		BaselineVersion: i.Baseline,
 	}
 	if i.Dir != "" {
-		params.DirURL = i.Dir
+		params.DirURL = "file://" + i.Dir
 	}
 	return client.Apply(ctx, params)
 }

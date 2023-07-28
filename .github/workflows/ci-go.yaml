@@ -64,6 +64,17 @@ jobs:
         uses: ./internal/action
         with:
           url: sqlite://file.db
+          dir: ./internal/testdata/migrations
+      - run: |
+          curl -sSf 'https://atlasgo.sh?test=1' | env ATLAS_DEBUG=true sh
+          atlas migrate status --url sqlite://file.db --dir file://./internal/testdata/migrations
+          output=$(atlas migrate status --url sqlite://file.db --dir file://./internal/testdata/migrations)
+          if [[ "$output" == *"Already at latest version"* ]]; then
+            echo "OK"
+          else
+            echo "Expected 'Already at latest version', got '$output'"
+            exit 1
+          fi
   docker:
     runs-on: ubuntu-latest
     needs: [golangci-lint, unit-tests, integration-tests]
