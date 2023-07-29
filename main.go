@@ -126,6 +126,7 @@ func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
 		if err != nil {
 			return nil, err
 		}
+		// nolint:errcheck
 		defer clean()
 		params.ConfigURL = cfg
 		params.Env = "atlas"
