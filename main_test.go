@@ -3,10 +3,15 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/base64"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"testing"
 
+	"ariga.io/atlas/sql/migrate"
 	"github.com/sethvargo/go-githubactions"
 	"github.com/stretchr/testify/require"
 
@@ -146,6 +151,51 @@ func TestRun(t *testing.T) {
 	require.Equal(t, 2, len(run.Applied))
 }
 
+func TestCloud(t *testing.T) {
+	srv := fakeCloud(t)
+	defer srv.Close()
+	dbpath := sqlitedb(t)
+	dburl := fmt.Sprintf("sqlite://%s", dbpath)
+	run, err := Run(context.Background(), &Input{
+		Cloud: Cloud{
+			URL:   srv.URL,
+			Dir:   "dir",
+			Token: "token",
+		},
+		URL: dburl,
+	})
+	require.NoError(t, err)
+	require.Equal(t, 2, len(run.Applied))
+}
+
+// fakeCloud returns a httptest.Server that mocks the cloud endpoint.
+func fakeCloud(t *testing.T) *httptest.Server {
+	dir := testDir(t, "./internal/testdata/migrations")
+	ad, err := migrate.ArchiveDir(&dir)
+	require.NoError(t, err)
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "Bearer token", r.Header.Get("Authorization"))
+		// nolint:errcheck
+		fmt.Fprintf(w, `{"data":{"dir":{"content":%q}}}`, base64.StdEncoding.EncodeToString(ad))
+	}))
+	return srv
+}
+
+// testDir returns a migrate.MemDir from the given path.
+func testDir(t *testing.T, path string) (d migrate.MemDir) {
+	rd, err := os.ReadDir(path)
+	require.NoError(t, err)
+	for _, f := range rd {
+		fp := filepath.Join(path, f.Name())
+		b, err := os.ReadFile(fp)
+		require.NoError(t, err)
+		require.NoError(t, d.WriteFile(f.Name(), b))
+	}
+	return d
+}
+
+// sqlitedb returns a path to an initialized sqlite database file. The file is
+// created in a temporary directory and will be deleted when the test finishes.
 func sqlitedb(t *testing.T) string {
 	td := t.TempDir()
 	dbpath := filepath.Join(td, "file.db")

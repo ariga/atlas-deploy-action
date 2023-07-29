@@ -1,14 +1,23 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	_ "embed"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
+	"text/template"
 
 	"ariga.io/atlas-go-sdk/atlasexec"
 	"github.com/sethvargo/go-githubactions"
+)
+
+var (
+	//go:embed atlashcl.tmpl
+	tmpl   string
+	config = template.Must(template.New("atlashcl").Parse(tmpl))
 )
 
 func main() {
@@ -27,18 +36,20 @@ func main() {
 type (
 	// Input is created from the GitHub Action "with" configuration.
 	Input struct {
-		URL        string
-		Amount     uint64
-		TxMode     string
-		Baseline   string
-		AllowDirty bool
-		Dir        string
-		Cloud      Cloud
+		URL             string
+		Amount          uint64
+		TxMode          string
+		Baseline        string
+		AllowDirty      bool
+		Dir             string
+		RevisionsSchema string
+		Cloud           Cloud
 	}
 	Cloud struct {
 		Dir   string
 		Token string
 		URL   string
+		Tag   string
 	}
 )
 
@@ -87,7 +98,7 @@ func Load(act *githubactions.Action) (*Input, error) {
 	return i, nil
 }
 
-// Run runs the migrate apply for the input.
+// Run runs the "migrate apply" for the input.
 func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
 	wd, err := os.Getwd()
 	if err != nil {
@@ -105,6 +116,20 @@ func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
 	}
 	if i.Dir != "" {
 		params.DirURL = "file://" + i.Dir
+	}
+	if i.Cloud.Dir != "" {
+		var buf bytes.Buffer
+		if err := config.Execute(&buf, i); err != nil {
+			return nil, err
+		}
+		cfg, clean, err := atlasexec.TempFile(buf.String(), "hcl")
+		if err != nil {
+			return nil, err
+		}
+		// nolint:errcheck
+		defer clean()
+		params.ConfigURL = cfg
+		params.Env = "atlas"
 	}
 	return client.Apply(ctx, params)
 }
