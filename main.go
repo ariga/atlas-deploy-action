@@ -30,6 +30,11 @@ func main() {
 	if err != nil {
 		act.Fatalf("failed to run: %v", err)
 	}
+	act.SetOutput("error", run.Error)
+	act.SetOutput("current", run.Current)
+	act.SetOutput("target", run.Target)
+	act.SetOutput("pending_count", strconv.Itoa(len(run.Pending)))
+	act.SetOutput("applied_count", strconv.Itoa(len(run.Applied)))
 	act.Infof("Run complete: +%v", run)
 }
 
