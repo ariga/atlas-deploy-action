@@ -58,8 +58,10 @@ jobs:
 - `url`: URL to target database (should be passed as a secret). (Required)
 - `dir`: Local path of the migration directory in the repository. (Optional)
 - `cloud-token`: Token for using Atlas Cloud (should be passed as a secret). (Optional)
-- `cloud-dir`: Name of the migration directory in the cloud. (Optional)
-- `cloud-tag`: Optional. Tag of a migration version in the cloud. (Optional)
+- `cloud-dir`: Name of the migration directory in the cloud. (Must be set if `cloud-token` is set)
+- `cloud-tag`: Tag of the migration version in the cloud. (Optional)
+
+Note: Either `dir` or `cloud-dir` must be set. If both are provided, an error will be thrown.
 
 ### Outputs
 
