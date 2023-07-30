@@ -113,12 +113,14 @@ func TestLoad(t *testing.T) {
 				"INPUT_URL":         "sqlite://file.db",
 				"INPUT_CLOUD-DIR":   "dir",
 				"INPUT_CLOUD-TOKEN": "token",
+				"INPUT_CLOUD-TAG":   "tag",
 			},
 			expect: &Input{
 				URL: "sqlite://file.db",
 				Cloud: Cloud{
 					Token: "token",
 					Dir:   "dir",
+					Tag:   "tag",
 				},
 			},
 		},
