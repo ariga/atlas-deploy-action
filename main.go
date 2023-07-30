@@ -100,6 +100,7 @@ func Load(act *githubactions.Action) (*Input, error) {
 		return nil, fmt.Errorf("cloud-token is required when cloud-dir is set")
 	}
 	i.Cloud.URL = act.GetInput("cloud-url")
+	i.Cloud.Tag = act.GetInput("cloud-tag")
 	return i, nil
 }
 

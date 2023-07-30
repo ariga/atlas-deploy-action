@@ -7,11 +7,29 @@ inputs:
   url:
     description: 'URL to target database (should be passed as a secret).'
     required: true
+  dir:
+    description: 'Local path of the migration directory in the repository'
+    required: false
   cloud-token:
     description: 'Token for using Atlas Cloud (should be passed as a secret).'
     required: false
   cloud-dir:
     description: 'Name of the migration directory in the cloud'
+    required: false
+  cloud-tag:
+    description: 'Optional. Tag of a migration version in the cloud'
+    required: false
+outputs:
+  error:
+    description: 'Error message if any'
+  current:
+    description: 'Current migration version'
+  target:
+    description: 'Target migration version'
+  pending_count:
+    description: 'Number of pending migrations'
+  applied_count:
+    description: 'Number of applied migrations'
 runs:
   using: 'docker'
   image: 'docker://arigaio/atlas-deploy-action:latest'
