@@ -61,18 +61,40 @@ jobs:
           load: true
       - run: docker images
       - name: sanity
+        id: sanity
         uses: ./internal/action
         with:
-          url: sqlite://file.db
-          dir: ./internal/testdata/migrations
-      - run: |
-          curl -sSf 'https://atlasgo.sh?test=1' | env ATLAS_DEBUG=true sh
-          atlas migrate status --url sqlite://file.db --dir file://./internal/testdata/migrations
-          output=$(atlas migrate status --url sqlite://file.db --dir file://./internal/testdata/migrations)
-          if [[ "$output" == *"Already at latest version"* ]]; then
-            echo "OK"
+          url: sqlite://internal/testdata/test.db
+          cloud-dir: migrations
+          cloud-token: ${{ secrets.ATLAS_CLOUD_TEST_TOKEN }}
+          cloud-url: ${{ secrets.ATLAS_CLOUD_TEST_URL }}
+      - name: Check Error and Compare Current with Target
+        run: |
+          error_output="${{ steps.sanity.outputs.error }}"
+          pending_output="${{ steps.sanity.outputs.pending_count }}"
+          applied_output="${{ steps.sanity.outputs.applied_count }}"
+          
+          # Check that the "error" output is empty
+          if [ -z "$error_output" ]; then
+            echo "No error occurred in the action."
           else
-            echo "Expected 'Already at latest version', got '$output'"
+            echo "Error occurred: $error_output"
+            exit 1
+          fi
+          
+          # Check that the "pending" output "0"
+          if [ "$pending_output" -eq "0" ]; then
+            echo "No pending migrations."
+          else
+            echo "Pending migrations: $pending_output"
+            exit 1
+          fi
+          
+          # Check that the "applied" output is "0"
+          if [ "$applied_output" -eq "0" ]; then
+            echo "No migrations applied."
+          else
+            echo "Migrations applied: $applied_output"
             exit 1
           fi
   docker:
