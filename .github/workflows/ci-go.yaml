@@ -60,6 +60,7 @@ jobs:
           tags: local
           load: true
       - run: docker images
+      - name: sanity
         id: sanity
         uses: ./internal/action
         with:
