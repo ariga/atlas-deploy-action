@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: "1.20"
+          go-version: "1.21"
       - uses: actions/cache@v3
         with:
           path: |
@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: "1.20"
+          go-version: "1.21"
       - uses: actions/cache@v3
         with:
           path: |
@@ -60,7 +60,6 @@ jobs:
           tags: local
           load: true
       - run: docker images
-      - name: sanity
         id: sanity
         uses: ./internal/action
         with:
