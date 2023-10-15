@@ -1,6 +1,6 @@
 FROM arigaio/atlas:latest-alpine as atlas
 
-FROM golang:1.21 as build
+FROM golang:1.20 as build
 
 WORKDIR /go/src/app
 COPY . .
