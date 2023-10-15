@@ -22,6 +22,8 @@ var (
 
 func main() {
 	act := githubactions.New()
+	act.Warningf("This action is deprecated. Please use ariga/atlas-action/migrate/apply instead. " +
+		"For details see: https://github.com/ariga/atlas-action#arigaatlas-actionmigrateapply")
 	inp, err := Load(act)
 	if err != nil {
 		act.Fatalf("failed to load input: %v", err)

@@ -1,5 +1,5 @@
 name: 'atlas-deploy-action'
-description: 'Deploy your database schema migrations using Atlas'
+description: 'Deprecated. Deploy your database schema migrations using Atlas'
 branding:
   icon: database
 author: 'Ariga'

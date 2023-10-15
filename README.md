@@ -1,5 +1,14 @@
 # atlas-deploy-action
 
+## Deprecation Notice
+
+This action has been deprecated in favor of the `ariga/atlas-action/migrate/apply` action.
+
+Please see [the docs](https://github.com/ariga/atlas-action#arigaatlas-actionmigrateapply) for more
+details.
+
+## About
+
 A GitHub Action to deploy versioned migrations with [Atlas](https://atlasgo.io).
 
 ## Supported Workflows
