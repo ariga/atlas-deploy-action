@@ -107,7 +107,7 @@ func Load(act *githubactions.Action) (*Input, error) {
 }
 
 // Run runs the "migrate apply" for the input.
-func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
+func Run(ctx context.Context, i *Input) (*atlasexec.MigrateApply, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -139,5 +139,5 @@ func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
 		params.ConfigURL = cfg
 		params.Env = "atlas"
 	}
-	return client.Apply(ctx, params)
+	return client.MigrateApply(ctx, params)
 }
