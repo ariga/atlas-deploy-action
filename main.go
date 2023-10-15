@@ -22,6 +22,8 @@ var (
 
 func main() {
 	act := githubactions.New()
+	act.Warningf("This action is deprecated. Please use ariga/atlas-action/migrate/apply instead. " +
+		"For details see: https://github.com/ariga/atlas-action#arigaatlas-actionmigrateapply")
 	inp, err := Load(act)
 	if err != nil {
 		act.Fatalf("failed to load input: %v", err)
@@ -105,7 +107,7 @@ func Load(act *githubactions.Action) (*Input, error) {
 }
 
 // Run runs the "migrate apply" for the input.
-func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
+func Run(ctx context.Context, i *Input) (*atlasexec.MigrateApply, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -114,7 +116,7 @@ func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
 	if err != nil {
 		return nil, err
 	}
-	params := &atlasexec.ApplyParams{
+	params := &atlasexec.MigrateApplyParams{
 		URL:             i.URL,
 		Amount:          i.Amount,
 		TxMode:          i.TxMode,
@@ -137,5 +139,5 @@ func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
 		params.ConfigURL = cfg
 		params.Env = "atlas"
 	}
-	return client.Apply(ctx, params)
+	return client.MigrateApply(ctx, params)
 }
