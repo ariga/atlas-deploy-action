@@ -60,13 +60,15 @@ jobs:
           tags: local
           load: true
       - run: docker images
+      - uses: ariga/setup-atlas@master
+        with:
+            cloud-token: ${{ secrets.ATLAS_CLOUD_TEST_TOKEN }}
       - name: sanity
         id: sanity
         uses: ./internal/action
         with:
           url: sqlite://internal/testdata/test.db
           cloud-dir: deploy-action-test
-          cloud-token: ${{ secrets.ATLAS_CLOUD_TEST_TOKEN }}
       - name: Check Error and Compare Current with Target
         run: |
           error_output="${{ steps.sanity.outputs.error }}"
