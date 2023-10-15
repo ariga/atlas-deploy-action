@@ -139,5 +139,5 @@ func Run(ctx context.Context, i *Input) (*atlasexec.ApplyReport, error) {
 		params.ConfigURL = cfg
 		params.Env = "atlas"
 	}
-	return client.Apply(ctx, params)
+	return client.MigrateApply(ctx, params)
 }
