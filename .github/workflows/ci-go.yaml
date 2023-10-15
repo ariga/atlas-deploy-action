@@ -65,9 +65,8 @@ jobs:
         uses: ./internal/action
         with:
           url: sqlite://internal/testdata/test.db
-          cloud-dir: migrations
+          cloud-dir: deploy-action-test
           cloud-token: ${{ secrets.ATLAS_CLOUD_TEST_TOKEN }}
-          cloud-url: ${{ secrets.ATLAS_CLOUD_TEST_URL }}
       - name: Check Error and Compare Current with Target
         run: |
           error_output="${{ steps.sanity.outputs.error }}"
