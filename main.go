@@ -116,7 +116,7 @@ func Run(ctx context.Context, i *Input) (*atlasexec.MigrateApply, error) {
 	if err != nil {
 		return nil, err
 	}
-	params := &atlasexec.ApplyParams{
+	params := &atlasexec.MigrateApplyParams{
 		URL:             i.URL,
 		Amount:          i.Amount,
 		TxMode:          i.TxMode,
