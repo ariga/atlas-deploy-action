@@ -1,20 +1,14 @@
 FROM arigaio/atlas:latest-alpine as atlas
 
-FROM golang:1.20 as build
+FROM golang:1.21 as build
 
 WORKDIR /go/src/app
 COPY . .
 
 RUN go mod download
 
-RUN CGO_ENABLED=0 go build -o /go/bin/app
-
-FROM gcr.io/distroless/static-debian11
-
-ENV PATH="/bin"
+RUN go build -o /go/bin/app
 
 COPY --from=atlas /atlas /bin
 
-COPY --from=build /go/bin/app /
-
-CMD ["/app"]
+CMD ["/go/bin/app"]
